@@ -39,6 +39,8 @@ namespace TrexRunner.Entities
         private const int TREX_DUCKING_SPRITE_ONE_POS_X = TREX_DEFAULT_SPRITE_POS_X + TREX_DEFAULT_SPRITE_WIDTH * 6;
         private const int TREX_DUCKING_SPRITE_ONE_POS_Y = 0;
         private const float DROP_VELOCITY = 600f;
+        private const float START_SPEED = 240f;
+
         private Sprite _idleBackgroundSprite;
         private Sprite _idleSprite;
         private Sprite _idleBlinkSprite;
@@ -54,6 +56,8 @@ namespace TrexRunner.Entities
         private float _verticalVelocity;
         private float _startPosY;
         private float _dropVelocity;
+
+        public event EventHandler JumpComplete;
 
         public TrexState State { get; private set; }
         public Vector2 Position { get; set; }
@@ -95,6 +99,13 @@ namespace TrexRunner.Entities
             _duckAnimation.AddFrame(new Sprite(spriteSheet, TREX_DUCKING_SPRITE_ONE_POS_X + TREX_DUCKING_SPRITE_WIDTH, TREX_DUCKING_SPRITE_ONE_POS_Y, TREX_DUCKING_SPRITE_WIDTH, TREX_DEFAULT_SPRITE_HEIGHT), RUN_ANIMATION_FRAME_LENGTH);
             _duckAnimation.AddFrame(_duckAnimation[0].Sprite, RUN_ANIMATION_FRAME_LENGTH * 2);
             _duckAnimation.Play();
+        }
+
+        public void Initialize()
+        {
+            Speed = START_SPEED;
+            State = TrexState.Running;
+
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -146,6 +157,8 @@ namespace TrexRunner.Entities
                     Position = new Vector2(Position.X, _startPosY);
                     _verticalVelocity = 0;
                     State = TrexState.Running;
+
+                    OnJumpComplete();
                 }
             }
             else if (State == TrexState.Running)
@@ -227,5 +240,14 @@ namespace TrexRunner.Entities
 
             return true;
         }
+
+        // This method allows subclasses of this class (Trex) to override how an event should be raised.
+        // Doing so allows subclasses to provide different arguments for the event handlers
+        protected virtual void OnJumpComplete()
+        {
+            EventHandler handler = JumpComplete;
+            handler?.Invoke(this, EventArgs.Empty);
+        }
+
     }
 }
