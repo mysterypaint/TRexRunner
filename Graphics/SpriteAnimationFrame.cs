@@ -7,7 +7,8 @@ namespace TrexRunner.Graphics
     public class SpriteAnimationFrame
     {
         private Sprite _sprite;
-        public Sprite Sprite {
+        public Sprite Sprite
+        {
             get
             {
                 return _sprite;
@@ -16,7 +17,7 @@ namespace TrexRunner.Graphics
             {
                 if (value == null)
                     throw new ArgumentNullException("value", "The sprite cannot be null.");
-                
+
                 _sprite = value;
             }
         }

@@ -132,7 +132,8 @@ namespace TrexRunner.Entities
                 }
 
                 _blinkAnimation.Update(gameTime);
-            } else if (State == TrexState.Jumping || State == TrexState.Falling)
+            }
+            else if (State == TrexState.Jumping || State == TrexState.Falling)
             {
                 Position = new Vector2(Position.X, Position.Y + _verticalVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds + _dropVelocity * (float)gameTime.ElapsedGameTime.TotalSeconds);
                 _verticalVelocity += GRAVITY * (float)gameTime.ElapsedGameTime.TotalSeconds;

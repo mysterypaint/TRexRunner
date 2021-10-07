@@ -42,7 +42,7 @@ namespace TrexRunner.Entities
 
         public void Update(GameTime gameTime)
         {
-            
+
         }
 
         public void Initialize()

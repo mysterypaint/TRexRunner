@@ -19,7 +19,7 @@ namespace TrexRunner.Entities
 
         public void Update(GameTime gameTime)
         {
-            foreach(IGameEntity entity in _entities)
+            foreach (IGameEntity entity in _entities)
             {
                 entity.Update(gameTime);
             }
