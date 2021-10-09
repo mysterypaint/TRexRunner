@@ -12,6 +12,9 @@
   <ItemGroup>
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
+    <None Remove="Content\obj\DesktopGL\score-reached.mgcontent" />
+    <None Remove="Content\obj\DesktopGL\TrexSpritesheet.mgcontent" />
+    <None Remove="Content\bin\DesktopGL\TrexSpritesheet.xnb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />

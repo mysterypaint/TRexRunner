@@ -38,12 +38,21 @@ namespace TrexRunner.Entities
 
         private const int TREX_DUCKING_SPRITE_ONE_POS_X = TREX_DEFAULT_SPRITE_POS_X + TREX_DEFAULT_SPRITE_WIDTH * 6;
         private const int TREX_DUCKING_SPRITE_ONE_POS_Y = 0;
+
+        private const int TREX_DEAD_SPRITE_POS_X = 1068;
+        private const int TREX_DEAD_SPRITE_POS_Y = 0;
+
         private const float DROP_VELOCITY = 600f;
-        private const float START_SPEED = 240f;
+
+        public const float START_SPEED = 280f;
+        public const float MAX_SPEED = 900f;
+
+        private const float ACCELERATION_PPS_PER_SECOND = 5f;
 
         private Sprite _idleBackgroundSprite;
         private Sprite _idleSprite;
         private Sprite _idleBlinkSprite;
+        private Sprite _deadSprite;
 
         private SoundEffect _jumpSound;
 
@@ -99,34 +108,45 @@ namespace TrexRunner.Entities
             _duckAnimation.AddFrame(new Sprite(spriteSheet, TREX_DUCKING_SPRITE_ONE_POS_X + TREX_DUCKING_SPRITE_WIDTH, TREX_DUCKING_SPRITE_ONE_POS_Y, TREX_DUCKING_SPRITE_WIDTH, TREX_DEFAULT_SPRITE_HEIGHT), RUN_ANIMATION_FRAME_LENGTH);
             _duckAnimation.AddFrame(_duckAnimation[0].Sprite, RUN_ANIMATION_FRAME_LENGTH * 2);
             _duckAnimation.Play();
+
+            _deadSprite = new Sprite(spriteSheet, TREX_DEAD_SPRITE_POS_X, TREX_DEAD_SPRITE_POS_Y, TREX_DEFAULT_SPRITE_WIDTH, TREX_DEFAULT_SPRITE_HEIGHT);
+
+            IsAlive = true;
         }
 
         public void Initialize()
         {
             Speed = START_SPEED;
             State = TrexState.Running;
-
+            IsAlive = true;
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            if (State == TrexState.Idle)
+            if (IsAlive)
             {
-                _idleBackgroundSprite.Draw(spriteBatch, Position);
-                _blinkAnimation.Draw(spriteBatch, Position);
-            }
-            else if (State == TrexState.Jumping || State == TrexState.Falling)
-            {
-                _idleSprite.Draw(spriteBatch, Position);
+                if (State == TrexState.Idle)
+                {
+                    _idleBackgroundSprite.Draw(spriteBatch, Position);
+                    _blinkAnimation.Draw(spriteBatch, Position);
+                }
+                else if (State == TrexState.Jumping || State == TrexState.Falling)
+                {
+                    _idleSprite.Draw(spriteBatch, Position);
 
+                }
+                else if (State == TrexState.Running)
+                {
+                    _runAnimation.Draw(spriteBatch, Position);
+                }
+                else if (State == TrexState.Ducking)
+                {
+                    _duckAnimation.Draw(spriteBatch, Position); //Consider using a hashmap or dictionary to store the different animations
+                }
             }
-            else if (State == TrexState.Running)
+            else
             {
-                _runAnimation.Draw(spriteBatch, Position);
-            }
-            else if (State == TrexState.Ducking)
-            {
-                _duckAnimation.Draw(spriteBatch, Position); //Consider using a hashmap or dictionary to store the different animations
+                _deadSprite.Draw(spriteBatch, Position);
             }
         }
 
@@ -169,6 +189,12 @@ namespace TrexRunner.Entities
             {
                 _duckAnimation.Update(gameTime);
             }
+
+            if (State != TrexState.Idle)
+                Speed += ACCELERATION_PPS_PER_SECOND * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (Speed > MAX_SPEED)
+                Speed = MAX_SPEED;
 
             if (State != TrexState.Falling)
                 _dropVelocity = 0;
@@ -249,5 +275,16 @@ namespace TrexRunner.Entities
             handler?.Invoke(this, EventArgs.Empty);
         }
 
+        public bool Die()
+        {
+            if (!IsAlive)
+                return false;
+
+            State = TrexState.Idle;
+            Speed = 0;
+
+            IsAlive = false;
+            return true;
+        }
     }
 }

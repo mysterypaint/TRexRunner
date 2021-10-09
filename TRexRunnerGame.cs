@@ -46,6 +46,8 @@ namespace TrexRunner
         private InputController _inputController;
 
         private GroundManager _groundManager;
+        private ObstacleManager _obstacleManager;
+        private GameOverScreen _gameOverScreen;
 
         private EntityManager _entityManager;
 
@@ -88,7 +90,7 @@ namespace TrexRunner
             _fadeInTexture.SetData(new Color[] { Color.White });
 
             _trex = new Trex(_spriteSheetTexture, new Vector2(TREX_START_POS_X, TREX_START_POS_Y - Trex.TREX_DEFAULT_SPRITE_HEIGHT), _sfxButtonPress);
-            _trex.DrawOrder = 10;
+            _trex.DrawOrder = 100;
             _trex.JumpComplete += trex_JumpComplete;
             //_trex.JumpComplete += (o, e) => Console.WriteLine("Henlo!");
 
@@ -100,10 +102,15 @@ namespace TrexRunner
             _inputController = new InputController(_trex);
 
             _groundManager = new GroundManager(_spriteSheetTexture, _entityManager, _trex);
+            _obstacleManager = new ObstacleManager(_entityManager, _trex, _scoreBoard, _spriteSheetTexture);
+
+            _gameOverScreen = new GameOverScreen(_spriteSheetTexture);
 
             _entityManager.AddEntity(_trex);
             _entityManager.AddEntity(_groundManager);
             _entityManager.AddEntity(_scoreBoard);
+            _entityManager.AddEntity(_obstacleManager);
+            _entityManager.AddEntity(_gameOverScreen);
 
             _groundManager.Initialize();
         }
@@ -114,6 +121,8 @@ namespace TrexRunner
             {
                 State = GameState.Playing;
                 _trex.Initialize();
+
+                _obstacleManager.IsEnabled = true;
             }
         }
 
